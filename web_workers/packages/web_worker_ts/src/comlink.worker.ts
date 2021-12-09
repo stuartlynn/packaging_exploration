@@ -1,6 +1,6 @@
 import { DatasetService } from "./DatasetService";
 import {expose} from 'comlink'
 
-export type DatasetServiceType = typeof DatasetService
+export type {DatasetServiceInterface} from "./DatasetService" 
 
 expose(DatasetService)

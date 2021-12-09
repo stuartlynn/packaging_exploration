@@ -8,7 +8,8 @@
     "packages": [
       "packages/main",
       "packages/web_worker_js",
-      "packages/web_worker_ts"
+      "packages/web_worker_ts",
+      "packages/wasm-func"
     ],
     "nohoist": [
       "**/babel-loader",
@@ -16,5 +17,8 @@
       "**webpack-cli"
     ]
   },
-  "packageManager": "yarn@3.1.1"
+  "packageManager": "yarn@3.1.1",
+  "dependencies": {
+    "rust-wasm-react-calculator": "^0.1.7"
+  }
 }

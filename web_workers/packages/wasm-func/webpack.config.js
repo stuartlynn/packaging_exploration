@@ -1,28 +1,24 @@
 const webpack = require("webpack");
 const path = require("path");
 const pkg = require("./package.json");
-
+const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
+const wasm = new WasmPackPlugin({
+  crateDirectory: path.resolve(__dirname),
+  args: "--log-level warn",
+});
+console.log("WASM IS ", wasm);
 const config = {
-  entry: "./index.ts",
+  entry: "./index.js",
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "index.js",
     library: {
-      name: "web_worker_ts",
+      name: "web_func",
       type: "umd",
     },
   },
   module: {
     rules: [
-      {
-        test: /\.worker\.ts$/,
-        loader: "worker-loader",
-        options: {
-          filename: "[name].[contenthash].worker.js",
-          chunkFilename: "[id].[contenthash].worker.js",
-          inline: "fallback",
-        },
-      },
       {
         test: /\.(ts|tsx)$/,
         exclude: /(node_modules|bower_components)/,
@@ -30,7 +26,6 @@ const config = {
           loader: "swc-loader",
           options: {
             jsc: {
-              keepClassNames: true,
               parser: {
                 syntax: "typescript",
                 tsx: true,
@@ -47,11 +42,10 @@ const config = {
     alias: {},
     fallback: {},
   },
-  plugins: [],
+  plugins: [wasm],
   externals: [].filter((a) => a !== "matico_spec"),
-  experiments: {},
-  stats: {
-    children: true,
+  experiments: {
+    syncWebAssembly:true
   },
 };
 
