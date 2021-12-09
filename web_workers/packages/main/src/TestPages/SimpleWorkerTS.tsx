@@ -1,0 +1,58 @@
+
+import React,{useEffect,useState, useRef} from 'react'
+//@ts-ignore
+import  {someOtherFunc,getWorker, runWorkerFromLib, getComlinkWorker} from '@workers/web_worker_ts'
+
+export const SimpleWorkerTS: React.FC = ()=>{
+  const [workerResult, setWorkerResult ]= useState(null)
+  const [inLibResult, setInLibResult]= useState(null)
+  const [comlinkResult, setComlinkResult]= useState(null)
+  const comlinkRef = useRef<any>(null)
+
+  console.log(someOtherFunc)
+  useEffect(()=>{
+    const worker =getWorker()
+    worker.addEventListener('message',(e:any)=>{
+      console.log("Got back response ")
+      setWorkerResult(e.data)
+    })
+    worker.postMessage("test")
+  },[])
+
+  const result =someOtherFunc()
+  const worker = getWorker()
+
+  useEffect(()=>{
+    runWorkerFromLib().then((m:any)=>setInLibResult(m))
+  },[])
+
+  const onClick = ()=>{
+    if(comlinkRef.current){
+      comlinkRef.current.doSomethingBig("this is a string").then((result:any)=>{
+        setComlinkResult(result) 
+      })
+    }
+  }
+
+  useEffect(()=>{
+    const worker = getComlinkWorker();
+    comlinkRef.current =worker
+  },[])
+
+  return(
+    <div>
+      <h3>Simple worker JS</h3>
+      <p>Simple lib call {result}</p>
+      {workerResult &&
+      <p>Worker result :{workerResult}</p>
+      }
+      {inLibResult &&
+      <p>inLib result :{inLibResult}</p>
+      }
+      {comlinkResult &&
+      <p>comlink result :{comlinkResult}</p>
+      }
+      <button onClick={()=>onClick()}>click</button>
+    </div>
+  )
+} 
